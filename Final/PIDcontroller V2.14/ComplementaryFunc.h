@@ -158,7 +158,7 @@ PlannedRecordObject getPRfromMem(byte designatedPos, byte designatedByte, boolea
     flashMem.end();
 
     PlannedRecordObject goodObj(name, temperature, daysOfWeek, startTime, endTime);
-    Serial.println("</PROget>");
+    if(debugMode) {Serial.println("</PROget>");}
     return goodObj;
   } else {
     Serial.println("empty sector" + String(designatedPos) + " " + String(designatedByte) + "\n</PROget>");
