@@ -560,7 +560,7 @@ void loop() {
       break;}
     case 0:
       {                       //---------------0 - MAIN SCREEN---------------------------------
-        int custom_cappedEncoderValue = constrainEncode(4));
+        int custom_cappedEncoderValue = constrainEncoder(4);
         drawFrames = true;
         char tempChar = 223;  //°
         tempString = String(round((currentSensorTemperature * 10)) / 10);
@@ -636,6 +636,9 @@ void loop() {
               currentMenu = 1;
               encoder.setCount(0);
               refreshVariablesFromMem(true);
+              switchSettingsPickMode = false;
+              settingsPickMode = false;
+              int64Cache = 0;
               break;
             }
             case 1:{
@@ -703,7 +706,7 @@ void loop() {
               byte currentIndex = 0;
               bool validSyntax = true;
               stringCache+=":";
-              Serial.println("<debug>");
+              Serial.println("<Debug>");
               for(int i=0; i<stringCache.length();i++){
                 if(!validSyntax){
                   break;
@@ -769,7 +772,7 @@ void loop() {
                   popupHandler(currentMenu, "invalid datetime");
                 }
               }
-              Serial.println("</debug>");
+              Serial.println("</Debug>");
               break;
             }
             case 7:{  //date
@@ -781,7 +784,7 @@ void loop() {
               byte currentIndex = 0;
               bool validSyntax = true;
               stringCache+=".";
-              Serial.println("<debug>");
+              Serial.println("<Debug>");
               for(int i=0; i<stringCache.length();i++){
                 if(!validSyntax){
                   break;
@@ -847,7 +850,7 @@ void loop() {
               }
               else{popupHandler(currentMenu, "wrong time syntax");}
 
-              Serial.println("</debug>");
+              Serial.println("</Debug>");
               break;
             }
             default:{
@@ -892,16 +895,16 @@ void loop() {
           switchSettingsPickMode = false;
           if(!settingsPickMode){ //from standart
             if(storedPages[int64Cache] == emptyPH){
-              Serial.println("<debug>user tried to edit a disabled variable " + String(int64Cache-PIDsettingOffsetIndex) + " with curr value: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex]) + "</debug>");
+              Serial.println("<Debug>user tried to edit a disabled variable " + String(int64Cache-PIDsettingOffsetIndex) + " with curr value: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex]) + "</Debug>");
               settingsPickMode = false;
             }
             else{
             uIntCache = encoder.getCount();
             encoder.setCount(PIDsettings[int64Cache-PIDsettingOffsetIndex]);
             settingsPickMode = true;
-            Serial.println("<debug>editing var number " + String(int64Cache-PIDsettingOffsetIndex) + " with curr value: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex])+"</debug>");
+            Serial.println("<Debug>editing var number " + String(int64Cache-PIDsettingOffsetIndex) + " with curr value: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex])+"</Debug>");
             }}
-          else{encoder.setCount(uIntCache); settingsPickMode = false; Serial.println("<debug>value of var number " + String(int64Cache-PIDsettingOffsetIndex)  + " changed to: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex]) + "</debug>"); encoderSwitch = false;} //back to standart 
+          else{encoder.setCount(uIntCache); settingsPickMode = false; Serial.println("<Debug>value of var number " + String(int64Cache-PIDsettingOffsetIndex)  + " changed to: " + String(PIDsettings[int64Cache-PIDsettingOffsetIndex]) + "</Debug>"); encoderSwitch = false;} //back to standart 
         }
         else{
           if(!settingsPickMode){int64Cache = custom_cappedEncoderValue;}//standart
@@ -940,7 +943,7 @@ void loop() {
               break;
             }
             case 3:{
-              editorHandler(String(Km*100.0),"multiplier * 100", 10, 48, "0123456789.-", 4);
+              editorHandler(String(Km*100.0),"multiplier / 100", 10, 48, "0123456789.-", 4);
               break;
             }
             case 4:{
@@ -1072,6 +1075,7 @@ void loop() {
           lcd.clear();
           lcd.print("saving values");
           pushPRRegister();          
+          drawFrames = false;
           nextAutoChange = RTC_Time;
           break;
         }
